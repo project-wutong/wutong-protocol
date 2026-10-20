@@ -1,0 +1,24 @@
+name: Wutong Improvement Proposal (WIP) / 协议改进提案
+description: Propose a normative change to the wire format, schemas, semantics or registries.
+labels: ["type: spec-change", "status: needs-decision"]
+body:
+  - type: textarea
+    id: problem
+    attributes: {label: 1. Problem statement & threat model / 问题与威胁模型}
+    validations: {required: true}
+  - type: textarea
+    id: delta
+    attributes: {label: 2. Normative delta & backward compatibility / 规范变更与兼容性}
+    validations: {required: true}
+  - type: textarea
+    id: schema
+    attributes: {label: 3. Schema diff}
+  - type: textarea
+    id: fixtures
+    attributes: {label: 4. Positive and negative fixtures / 正反测试样例}
+  - type: textarea
+    id: evidence
+    attributes: {label: 5. Two-implementation test evidence (e.g. Python + Rust) / 双实现测试证据}
+  - type: textarea
+    id: migration
+    attributes: {label: 6. Migration notes / 迁移说明}
