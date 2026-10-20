@@ -1,0 +1,20 @@
+{
+  "protocol": "wutong/0.1",
+  "kind": "wutong.object",
+  "id": "urn:uuid:019a1111-1111-7111-8111-000000000066",
+  "occurred_at": "2026-10-18T12:00:00Z",
+  "payload": {
+    "object_id": "urn:uuid:019a1111-1111-7111-8111-000000000004",
+    "space_id": "urn:uuid:019a1111-1111-7111-8111-000000000002",
+    "owner_id": "urn:uuid:019a1111-1111-7111-8111-000000000003",
+    "object_type": "document",
+    "title": "Wutong Protocol Notes",
+    "media_type": "text/markdown",
+    "byte_length": 123,
+    "content_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "binding": {
+      "kind": "file",
+      "relative_path": "notes/wutong.md"
+    }
+  }
+}

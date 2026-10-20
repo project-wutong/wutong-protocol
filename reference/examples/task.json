@@ -1,0 +1,16 @@
+{
+  "protocol": "wutong/0.1",
+  "kind": "wutong.task",
+  "id": "urn:uuid:019a1111-1111-7111-8111-00000000006a",
+  "occurred_at": "2026-10-18T12:00:00Z",
+  "payload": {
+    "task_id": "urn:uuid:019a1111-1111-7111-8111-000000000008",
+    "requester_id": "urn:uuid:019a1111-1111-7111-8111-000000000003",
+    "assignee_id": "urn:uuid:019a1111-1111-7111-8111-000000000001",
+    "target_ref": "urn:uuid:019a1111-1111-7111-8111-000000000004",
+    "state": "awaiting_approval",
+    "artifacts": [
+      "urn:uuid:019a1111-1111-7111-8111-000000000007"
+    ]
+  }
+}

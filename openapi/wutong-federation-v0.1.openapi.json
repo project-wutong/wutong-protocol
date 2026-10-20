@@ -1,0 +1,341 @@
+{
+  "openapi": "3.1.0",
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "info": {
+    "title": "Wutong Protocol Federation & Service Host HTTP API",
+    "version": "0.1.2",
+    "description": "Normative HTTP/HTTPS interface for Wutong Protocol v0.1.0 nodes (WTP-Federation, WTP-Sync, WTP-Service).",
+    "license": {
+      "name": "AGPL-3.0-only",
+      "identifier": "AGPL-3.0-only"
+    }
+  },
+  "paths": {
+    "/_wutong/v0.1/meta": {
+      "get": {
+        "operationId": "getNodeMeta",
+        "summary": "Discover node capabilities, supported profiles, wire encodings, and endpoints",
+        "responses": {
+          "200": {
+            "description": "Signed or unsigned wutong.node_meta envelope",
+            "content": {
+              "application/wtp+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WutongEnvelope"
+                }
+              },
+              "application/wtp+cbor": {
+                "schema": {
+                  "type": "string",
+                  "contentMediaType": "application/wtp+cbor"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/_wutong/v0.1/objects/{object_id}": {
+      "get": {
+        "operationId": "getObject",
+        "summary": "Fetch a public or capability-authorized Wutong Object envelope",
+        "parameters": [
+          {
+            "name": "object_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "wutong.object envelope",
+            "content": {
+              "application/wtp+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WutongEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/_wutong/v0.1/revisions/{revision_id}": {
+      "get": {
+        "operationId": "getRevision",
+        "summary": "Fetch an immutable Wutong Revision envelope",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "wutong.revision envelope",
+            "content": {
+              "application/wtp+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WutongEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/_wutong/v0.1/resolve": {
+      "post": {
+        "operationId": "resolveResource",
+        "summary": "Resolve a Wutong URN or external resource reference to its latest Object/Publication",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "resource_ref": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  }
+                },
+                "required": [
+                  "resource_ref"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resolved envelope",
+            "content": {
+              "application/wtp+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WutongEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/_wutong/v0.1/subscriptions": {
+      "post": {
+        "operationId": "createSubscription",
+        "summary": "Create or update a signed wutong.subscription stream",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/wtp+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WutongEnvelope"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Active subscription confirmation and event batch",
+            "content": {
+              "application/wtp+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WutongEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/_wutong/v0.1/invocations": {
+      "post": {
+        "operationId": "submitInvocation",
+        "summary": "Submit a signed, replay-protected Wutong action, proposal, task, or publication",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/wtp+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WutongEnvelope"
+              }
+            },
+            "application/wtp+cbor": {
+              "schema": {
+                "type": "string",
+                "contentMediaType": "application/wtp+cbor"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signed wutong.event receipt",
+            "content": {
+              "application/wtp+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WutongEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ErrorResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/ErrorResponse"
+          },
+          "429": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/_wutong/v0.1/sync": {
+      "post": {
+        "operationId": "exchangeSyncFrame",
+        "summary": "Exchange a signed wutong.sync_frame message",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/wtp+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WutongEnvelope"
+              }
+            },
+            "application/wtp+cbor": {
+              "schema": {
+                "type": "string",
+                "contentMediaType": "application/wtp+cbor"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response wutong.sync_frame envelope",
+            "content": {
+              "application/wtp+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WutongEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "WutongEnvelope": {
+        "type": "object",
+        "$ref": "urn:wutong:schema:core:0.1.2"
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "error_code": {
+            "enum": [
+              "ERR_SCHEMA",
+              "ERR_VERSION",
+              "ERR_SIGNATURE",
+              "ERR_KEY_UNBOUND",
+              "ERR_KEY_REVOKED",
+              "ERR_REVOCATION_STALE",
+              "ERR_PERMISSION",
+              "ERR_REPLAY",
+              "ERR_EQUIVOCATION",
+              "ERR_DECRYPTION_FAILED",
+              "ERR_CONFLICT",
+              "ERR_SYMLINK_OR_TRAVERSAL",
+              "ERR_SSRF_BLOCKED",
+              "ERR_UNRESOLVED",
+              "ERR_RATE_LIMIT",
+              "ERR_UNSUPPORTED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          },
+          "retry_after_seconds": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "error_code",
+          "message"
+        ]
+      }
+    },
+    "responses": {
+      "ErrorResponse": {
+        "description": "Structured Wutong Protocol error response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      }
+    }
+  }
+}
